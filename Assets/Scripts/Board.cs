@@ -43,8 +43,8 @@ public class Board : MonoBehaviour
     //
     [Header("Tiles")] public Tile tilePrefab;
     public List<Tile> activeTiles = new List<Tile>();
-
     public Transform tilesParent;
+    private int tileCounter = 0;
 
     // - Properties
     public float tileSize => boardWorldSize / (dimensions + dimensions * tilePadding);
@@ -65,7 +65,6 @@ public class Board : MonoBehaviour
 
 
     public Color[] cols;
-    private float removeDuration = .1f;
     private float removeTimer = 0;
 
 
@@ -97,7 +96,7 @@ public class Board : MonoBehaviour
             removeTimer -= Time.deltaTime;
             if (removeTimer < 0)
             {
-                removeTimer += removeDuration;
+                removeTimer += AppManager.instance.removeDuration;
                 BoardSpace space = selectedSpaces[0];
                 DestroyTile(space.occupyingTile);
                 selectedSpaces.Remove(space);
@@ -116,19 +115,21 @@ public class Board : MonoBehaviour
             foreach (var tile in activeTiles)
                 tile.UpdateTileMovement(tileSpacing, MinY);
 
+            // Update assigned tiles
+            foreach (var space in _boardSpacesDict)
+            {
+                Tile tileAtIndex = activeTiles.SingleOrDefault(x => x.BoardSpaceIndex.Equals(space.Key));
+                if(tileAtIndex != null)
+                    space.Value.SetTile(tileAtIndex);
+                else
+                    space.Value.ClearOccupiedTileReference();
+            }
+            
             if (InPlaceTiles == activeTiles.Count)
                 SetState(BoardState.Filling);
         }
         else if (state == BoardState.Filling)
         {
-            foreach (var space in _boardSpacesDict)
-            {
-                space.Value.ClearOccupiedTileReference();
-                Tile tile = FindTileAtSpace(space.Key);
-                if (tile != null)
-                    space.Value.SetTile(FindTileAtSpace(space.Key));
-            }
-
             populatedSpaces = _boardSpacesDict.Count(x => x.Value.IsOccupied);
             //Debug.Log($"populatedSpaces  {populatedSpaces}");
             if (populatedSpaces == _boardSpacesDict.Count)
@@ -147,7 +148,7 @@ public class Board : MonoBehaviour
 
         state = newState;
 
-        Debug.Log(newState);
+        Debug.Log("-------- Board state: " + newState);
     }
 
     public bool SpaceIsSelectable(BoardSpace occupiedSpace)
@@ -194,6 +195,7 @@ public class Board : MonoBehaviour
             activeTiles.Clear();
         }
 
+        int newTileCount = 0;
         foreach (var space in _boardSpacesDict)
         {
             if (space.Value.IsOccupied)
@@ -207,10 +209,14 @@ public class Board : MonoBehaviour
             /////////////////
             /// Spawn new tile
             Tile newTile = Instantiate(tilePrefab, tilesParent);
-            newTile.name = "tile " + activeTiles.Count;
+            newTile.name = "tile " + tileCounter;
+            tileCounter++;
             activeTiles.Add(newTile);
             newTile.SetType((Tile.TileType)Random.Range(0, cols.Length - 1));
+            newTile.transform.position = space.Value.transform.position;
+            newTile.Init(newTileCount * .05f);
             space.Value.SetTile(newTile);
+            newTileCount++;
         }
     }
 
@@ -245,9 +251,6 @@ public class Board : MonoBehaviour
 
     // HELPER METHODS
     //
-    public Tile FindTileAtSpace(int2 index) =>
-        activeTiles.FirstOrDefault(x => x.boardSpaceIndex.x == index.x && x.boardSpaceIndex.y == index.y);
-
     public BoardSpace GetSpaceAtIndex(int x, int y) => _boardSpacesDict[new int2(x, y)];
     public BoardSpace FindBoardSpaceAtPos(Vector3 pos) => _boardSpacesDict[GetIndexAtPos(pos)];
     public Vector3 FindQuantizedSpacePos(Vector3 pos) => _boardSpacesDict[GetIndexAtPos(pos)].transform.position;

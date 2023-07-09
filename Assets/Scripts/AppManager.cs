@@ -17,6 +17,10 @@ public class AppManager : MonoBehaviour
     public AppState state = AppState.MainMenu;
     public int score;
     private bool selectionStarted = false;
+
+    public float tileMoveSpeed = 6;
+    public float tileScaleDuration = 0.15f;
+    public float removeDuration = .05f;
     
     public LayerMask tileLayerMask;
     

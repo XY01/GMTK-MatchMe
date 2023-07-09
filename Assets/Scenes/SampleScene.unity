@@ -1237,6 +1237,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 1
   score: 0
+  tileMoveSpeed: 14
+  tileScaleDuration: 0.03
+  removeDuration: 0.03
   tileLayerMask:
     serializedVersion: 2
     m_Bits: 0
@@ -1312,7 +1315,6 @@ MonoBehaviour:
   - {r: 1, g: 0, b: 0, a: 0}
   - {r: 0.0061826706, g: 0, b: 1, a: 0}
   - {r: 0.99508846, g: 1, b: 0, a: 0}
-  testTform: {fileID: 0}
 --- !u!1 &746796022
 GameObject:
   m_ObjectHideFlags: 0

@@ -26,23 +26,24 @@ public class Tile : MonoBehaviour
     #region VARIABLES
     public TileState state = TileState.TransitionIn;
     public TileType type = TileType.Type0;
-    public int2 boardSpaceIndex;
+    public int2 BoardSpaceIndex => Board.instance.GetIndexAtPos(transform.position);
     
     //-- Rendering
     private MaterialPropertyBlock matPropBlock;
     private MeshRenderer renderer;
-    public float scaleDuration = 0.3f;
     #endregion
     
     // ----------- INITIALIZATION
     //
-    void Start()
+    public void Init(float timingOffset = 0)
     {
         state = TileState.TransitionIn;
-        StartCoroutine(ScaleOverTime(Board.instance.tileScale, scaleDuration));
+        StartCoroutine(ScaleOverTime(Board.instance.tileScale, AppManager.instance.tileScaleDuration, timingOffset));
     }
-    IEnumerator ScaleOverTime(Vector3 target, float duration)
+    IEnumerator ScaleOverTime(Vector3 target, float duration, float timingOffset)
     {
+        yield return new WaitForSeconds(0);
+        
         Vector3 originalScale = transform.localScale;
         float time = 0;
 
@@ -50,7 +51,7 @@ public class Tile : MonoBehaviour
         {
             time += Time.deltaTime;
             float t = time / duration; // normalized time
-            transform.localScale = Vector3.Lerp(originalScale, target, t);
+            transform.localScale = Vector3.Lerp(originalScale, target, t*t);
             yield return null;
         }
 
@@ -66,42 +67,42 @@ public class Tile : MonoBehaviour
     {
         if(state == TileState.TransitionIn || state == TileState.TransitionOut)
             return;
-        
-        boardSpaceIndex = Board.instance.GetIndexAtPos(transform.position);
-        
+
         if (transform.position.y <= minY)
+        {
+            state = TileState.InPlace;
             return;
-        
+        }
+
         RaycastHit hit;
         Ray ray = new Ray(transform.position, Vector3.down);
         
-        // ray cast down, if it hits a tile wihtin range, set state to in place
-        if (Physics.Raycast(ray, out hit, spacing * 2,AppManager.instance.tileLayerMask))
+        state = TileState.Falling;
+        // ray cast down, if it hits a tile within range, set state to in place
+        if (Physics.Raycast(ray, out hit, spacing * 1.4f,AppManager.instance.tileLayerMask))
         {
-            // If close to correct spacing then lock in place
-            if (Mathf.Abs(hit.distance - spacing) < .1f)
+            if (hit.collider.TryGetComponent(out Tile tileBelow))
             {
-                transform.position = Board.instance.FindQuantizedSpacePos(transform.position);
-                state = TileState.InPlace;
+                if (tileBelow.state == TileState.InPlace)
+                {
+                    BoardSpace space = Board.instance.FindBoardSpaceAtPos(transform.position);
+                    if (Vector3.Distance(space.transform.position, transform.position) < .15f)
+                    {
+                        state = TileState.InPlace;
+                        transform.position = space.transform.position;
+                    }
+                }
             }
-            else
-            {
-                state = TileState.Falling;
-            }
-        }
-        else
-        {
-            state = TileState.Falling;
         }
 
         if (state == TileState.Falling)
-            transform.position += Vector3.down * 6 * Time.deltaTime;
-        
-
-        if (transform.position.y < minY)
         {
-            transform.position = new Vector3(transform.position.x, minY, transform.position.z);
-            state = TileState.InPlace;
+            transform.position += Vector3.down * (AppManager.instance.tileMoveSpeed * Time.deltaTime);
+            if (transform.position.y < minY)
+            {
+                transform.position = new Vector3(transform.position.x, minY, transform.position.z);
+                state = TileState.InPlace;
+            }
         }
     }
     public void SetType(TileType type)

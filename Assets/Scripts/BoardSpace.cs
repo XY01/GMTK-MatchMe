@@ -74,8 +74,12 @@ public class BoardSpace : MonoBehaviour
     }
     public void SetTile(Tile tile)
     {
+        if(occupyingTile == tile)
+            return;
+        
+        Debug.Log($"Setting tile - Space index {index}  Tile {tile.name}");
         occupyingTile = tile;
-        tile.transform.position = transform.position;
+        //tile.transform.position = transform.position;
     }
     public void DestroyTile(bool immediate = false)
     {
