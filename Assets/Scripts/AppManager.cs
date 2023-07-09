@@ -25,7 +25,6 @@ public class AppManager : MonoBehaviour
     public LayerMask tileLayerMask;
     
     
-    public Color selectedSpaceCol = Color.yellow;
     // Start is called before the first frame update
     void Awake()
     {
@@ -34,9 +33,12 @@ public class AppManager : MonoBehaviour
         Random.InitState(0);
     }
 
+    public float lerp = 0;
     public void AddScore(int points)
     {
         score += points;
+        lerp += .01f * points;
+        lerp = Mathf.Clamp01(lerp);
     }
 
     // Update is called once per frame

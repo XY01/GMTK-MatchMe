@@ -204,7 +204,7 @@ public class Board : MonoBehaviour
             if (activeTiles.Count >= _boardSpacesDict.Count)
                 return;
 
-            Debug.Log("Populating " + space.Value.index);
+            //Debug.Log("Populating " + space.Value.index);
 
             /////////////////
             /// Spawn new tile
@@ -212,11 +212,16 @@ public class Board : MonoBehaviour
             newTile.name = "tile " + tileCounter;
             tileCounter++;
             activeTiles.Add(newTile);
-            newTile.SetType((Tile.TileType)Random.Range(0, cols.Length - 1));
+            newTile.SetType((Tile.TileType)Random.Range(0, cols.Length));
             newTile.transform.position = space.Value.transform.position;
             newTile.Init(newTileCount * .05f);
             space.Value.SetTile(newTile);
             newTileCount++;
+        }
+        
+        foreach (var tile in activeTiles)
+        {
+            tile.UpdateType();
         }
     }
 

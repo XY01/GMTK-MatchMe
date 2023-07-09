@@ -77,7 +77,7 @@ public class BoardSpace : MonoBehaviour
         if(occupyingTile == tile)
             return;
         
-        Debug.Log($"Setting tile - Space index {index}  Tile {tile.name}");
+        //Debug.Log($"Setting tile - Space index {index}  Tile {tile.name}");
         occupyingTile = tile;
         //tile.transform.position = transform.position;
     }

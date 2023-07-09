@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -105,6 +106,13 @@ public class Tile : MonoBehaviour
             }
         }
     }
+
+    // todo brute forced
+    private void Update()
+    {
+        UpdateType();
+    }
+
     public void SetType(TileType type)
     {
         if (matPropBlock == null)
@@ -114,13 +122,29 @@ public class Tile : MonoBehaviour
         }
         
         this.type = type;
+        UpdateType();
+      
+        
+       
+    }
+
+    public void UpdateType()
+    {
+        float lerp = AppManager.instance.lerp;
+        float hueLerp;
         switch (type)
         {  
             case TileType.Type0:
-                matPropBlock.SetColor("_Col", Color.red);
+                hueLerp = Mathf.Lerp(0, .33f, lerp);
+                matPropBlock.SetColor("_Col",  Color.HSVToRGB(hueLerp,1,1));
                 break;
             case TileType.Type1:
-                matPropBlock.SetColor("_Col", Color.blue);
+                hueLerp = Mathf.Lerp(.33f, .33f, lerp);
+                matPropBlock.SetColor("_Col", Color.HSVToRGB(hueLerp,1,1));
+                break;
+            case TileType.Type2:
+                hueLerp = Mathf.Lerp(.66f, .33f, lerp);
+                matPropBlock.SetColor("_Col", Color.HSVToRGB(hueLerp,1,1));
                 break;
         }
         
