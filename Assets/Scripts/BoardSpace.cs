@@ -1,27 +1,58 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class BoardSpace : MonoBehaviour
 {
-    public int xIndex;
-    public int yIndex;
     public Tile occupyingTile;
     public bool IsOccupied => occupyingTile != null;
 
     public Color selectedCol = Color.yellow;
     private Color col;
-    
-    public void Init(float xPos, float yPos, int x, int y, float spaceSize)
+    public int2 index;
+
+    public List<BoardSpace> adjascentSpaces = new();
+
+    private void Start()
     {
-        name = $"Space {x} {y}";
+        if (index.x == 0)
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(1, index.y));
+        else if (index.x == Board.instance.dimensions-1)
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x-1, index.y));
+        else
+        {
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x-1, index.y));
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x+1, index.y));
+        }
+        
+        
+        if (index.y == 0)
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x, 1));
+        else if (index.y == Board.instance.dimensions-1)
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x, index.y-1));
+        else
+        {
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x, index.y-1));
+            adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x, index.y+1));
+        }
+    }
+
+    public void Init( float xPos, float yPos, float spaceSize)
+    {
         transform.position = new Vector3(xPos, yPos, 0);
         transform.localScale = new Vector3(spaceSize*.95f, spaceSize*.95f, .3f);
-        xIndex = x;
-        yIndex = y;
+        Board board = FindObjectOfType<Board>();
+        this.index = board.WorldPosXYIndex(transform.position);
+        name = $"Space {index.x} {index.y}";
+    }
+
+    public bool IsAdjascentSpace(BoardSpace space)
+    {
+        return adjascentSpaces.Contains(space);
     }
     
-    public void ClearTile(bool immediate = false)
+    public void DestroyTile(bool immediate = false)
     {
         if (IsOccupied)
         {
@@ -34,6 +65,11 @@ public class BoardSpace : MonoBehaviour
         }
     }
 
+    public void ClearOccupied()
+    {
+        occupyingTile = null;
+    }
+
     public void SetTile(Tile tile)
     {
         occupyingTile = tile;
@@ -42,8 +78,6 @@ public class BoardSpace : MonoBehaviour
     public void PopulateWithTile(Tile tile, float tileSize)
     {
         occupyingTile = tile;
-        tile.boardIndexX = xIndex;
-        tile.boardIndexY = yIndex;
         tile.transform.position = transform.position;
         tile.transform.localScale = Vector3.one * tileSize;
     }
@@ -64,21 +98,20 @@ public class BoardSpace : MonoBehaviour
 
     public void Selected()
     {
-        if (Board.instance.SelectSpace(this))
+        if (Board.instance.SpaceIsSelectable(this))
         {
             SetColor(selectedCol);
-            Debug.Log($"Selected {xIndex} {yIndex}");
+            Debug.Log($"Selected {index}");
         }
         else
         {
-            
-            Debug.Log($"Selected unsuccessful {xIndex} {yIndex}");
+            Debug.Log($"Selected unsuccessful {index}");
         }
     }
     
     public void Deslected()
     {
         SetColor(Color.white);
-        Debug.Log($"Deselected {xIndex} {yIndex}");
+        //Debug.Log($"Deselected {index}");
     }
 }

@@ -9,13 +9,6 @@ public class CamController : MonoBehaviour
     public float smoothing = 6;
     private Quaternion targetRot;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         float xOffsetNorm = (Input.mousePosition.y / Screen.height);

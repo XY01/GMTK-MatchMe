@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -13,13 +14,12 @@ public class Tile : MonoBehaviour
     public TileState state = TileState.InPlace;
     
     public Color col;
-    public int boardIndexX;
-    public int boardIndexY;
     private MeshRenderer renderer;
 
     private MaterialPropertyBlock matPropBlock;
     private LayerMask mask;
     private BoardSpace boardSpace;
+    public int2 index;
     
     // Start is called before the first frame update
     void Awake()
@@ -30,6 +30,8 @@ public class Tile : MonoBehaviour
     // Update is called once per frame
     public void ManualUpdate(float spacing, float minY)
     {
+        index = Board.instance.WorldPosXYIndex(transform.position);
+        
         if (transform.position.y <= minY)
             return;
         
@@ -40,12 +42,11 @@ public class Tile : MonoBehaviour
         if (Physics.Raycast(ray, out hit, spacing * 2,mask))
         {
             // If close to correct spacing then lock in place
-            if (Mathf.Abs(hit.distance - spacing) < .2f)
+            if (Mathf.Abs(hit.distance - spacing) < .1f)
             {
                 boardSpace = Board.instance.FindBoardSpaceAtPos(transform.position);
-                boardSpace.SetTile(this);
                 transform.position = new Vector3(boardSpace.transform.position.x, boardSpace.transform.position.y, transform.position.z);
-                //Debug.Log("Found space");
+                state = TileState.InPlace;
             }
             else
             {
@@ -56,15 +57,15 @@ public class Tile : MonoBehaviour
         {
             state = TileState.Falling;
         }
-        
 
         if (state == TileState.Falling)
-            transform.position += Vector3.down * 3 * Time.deltaTime;
+            transform.position += Vector3.down * 6 * Time.deltaTime;
         
 
         if (transform.position.y < minY)
         {
             transform.position = new Vector3(transform.position.x, minY, transform.position.z);
+            state = TileState.InPlace;
         }
     }
    
