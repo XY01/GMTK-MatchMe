@@ -56,7 +56,7 @@ public class BoardSpace : MonoBehaviour
         transform.position = new Vector3(xPos, yPos, 0);
         transform.localScale = new Vector3(spaceSize*.95f, spaceSize*.95f, .3f);
         Board board = FindObjectOfType<Board>();
-        this.index = board.WorldPosXYIndex(transform.position);
+        this.index = board.GetIndexAtPos(transform.position);
         name = $"Space {index.x} {index.y}";
     }
 

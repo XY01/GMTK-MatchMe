@@ -111,7 +111,7 @@ public class AppManager : MonoBehaviour
                 {
                     Debug.Log(hit.collider.name);
                     if (hit.collider.gameObject.TryGetComponent(out Tile tile))
-                        Board.instance.ClearTile(tile);
+                        Board.instance.DestroyTile(tile);
                 }
                 else
                 {

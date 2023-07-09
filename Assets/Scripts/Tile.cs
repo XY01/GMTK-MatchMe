@@ -67,7 +67,7 @@ public class Tile : MonoBehaviour
         if(state == TileState.TransitionIn || state == TileState.TransitionOut)
             return;
         
-        boardSpaceIndex = Board.instance.WorldPosXYIndex(transform.position);
+        boardSpaceIndex = Board.instance.GetIndexAtPos(transform.position);
         
         if (transform.position.y <= minY)
             return;
@@ -81,11 +81,8 @@ public class Tile : MonoBehaviour
             // If close to correct spacing then lock in place
             if (Mathf.Abs(hit.distance - spacing) < .1f)
             {
-                // replace using position got lookup index and board space
-                
-                // BoardSpace boardSpace = Board.instance.FindBoardSpaceAtPos(transform.position);
-                // transform.position = new Vector3(boardSpace.transform.position.x, boardSpace.transform.position.y, transform.position.z);
-                // state = TileState.InPlace;
+                transform.position = Board.instance.FindQuantizedSpacePos(transform.position);
+                state = TileState.InPlace;
             }
             else
             {

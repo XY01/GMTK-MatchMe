@@ -545,11 +545,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 0
     y: 2
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &316433252
 BoxCollider:
@@ -924,11 +923,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 1
     y: 1
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &542684592
 BoxCollider:
@@ -1116,11 +1114,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 1
     y: 0
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &652888703
 BoxCollider:
@@ -1240,6 +1237,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   state: 1
   score: 0
+  tileLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  selectedSpaceCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &739281343
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,16 +1294,6 @@ MonoBehaviour:
   tilePadding: 0.3
   boardSpacePrefab: {fileID: 7800089253449151412, guid: 953c4597e4ecb1b4a873d6e7b870e004,
     type: 3}
-  boardSpaceList:
-  - {fileID: 758254091}
-  - {fileID: 1218591599}
-  - {fileID: 316433251}
-  - {fileID: 652888702}
-  - {fileID: 542684591}
-  - {fileID: 1997907515}
-  - {fileID: 2050611057}
-  - {fileID: 1636628231}
-  - {fileID: 1608589155}
   spacesParent: {fileID: 1112243455}
   tilePrefab: {fileID: 6331117155967947463, guid: f88697c9a55888e4b83c6133a3b2dbd2,
     type: 3}
@@ -1317,11 +1308,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   tilesParent: {fileID: 746796023}
-  populateChance: 1
   cols:
   - {r: 1, g: 0, b: 0, a: 0}
   - {r: 0.0061826706, g: 0, b: 1, a: 0}
   - {r: 0.99508846, g: 1, b: 0, a: 0}
+  testTform: {fileID: 0}
 --- !u!1 &746796022
 GameObject:
   m_ObjectHideFlags: 0
@@ -1400,11 +1391,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 0
     y: 0
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &758254092
 BoxCollider:
@@ -2042,11 +2032,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 0
     y: 1
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &1218591600
 BoxCollider:
@@ -2462,11 +2451,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 2
     y: 2
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &1608589156
 BoxCollider:
@@ -2586,11 +2574,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 2
     y: 1
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &1636628232
 BoxCollider:
@@ -2893,11 +2880,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 1
     y: 2
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &1997907516
 BoxCollider:
@@ -3017,11 +3003,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3cc6f5edb630d48abc06fe99475c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  occupyingTile: {fileID: 0}
-  selectedCol: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   index:
     x: 2
     y: 0
+  occupyingTile: {fileID: 0}
   adjascentSpaces: []
 --- !u!65 &2050611058
 BoxCollider:
