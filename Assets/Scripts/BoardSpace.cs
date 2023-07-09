@@ -5,17 +5,28 @@ using UnityEngine;
 
 public class BoardSpace : MonoBehaviour
 {
-    public Tile occupyingTile;
+    // PROPERTIES
     public bool IsOccupied => occupyingTile != null;
-
-    public Color selectedCol = Color.yellow;
-    private Color col;
+    
+    // VARS
     public int2 index;
-
+    public Tile occupyingTile;
     public List<BoardSpace> adjascentSpaces = new();
+    //- Rendering
+    private MaterialPropertyBlock matPropBlock;
+    private MeshRenderer renderer;
+    private Color col;
 
+    // ----------- INITIALIZATION
+    //
     private void Start()
     {
+        FindAdjascentSpaces();
+    }
+    private void FindAdjascentSpaces()
+    {
+        adjascentSpaces.Clear();
+        
         if (index.x == 0)
             adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(1, index.y));
         else if (index.x == Board.instance.dimensions-1)
@@ -37,8 +48,7 @@ public class BoardSpace : MonoBehaviour
             adjascentSpaces.Add(Board.instance.GetSpaceAtIndex(index.x, index.y+1));
         }
     }
-
-    public void Init( float xPos, float yPos, float spaceSize)
+    public void Init(float xPos, float yPos, float spaceSize)
     {
         transform.position = new Vector3(xPos, yPos, 0);
         transform.localScale = new Vector3(spaceSize*.95f, spaceSize*.95f, .3f);
@@ -47,11 +57,23 @@ public class BoardSpace : MonoBehaviour
         name = $"Space {index.x} {index.y}";
     }
 
-    public bool IsAdjascentSpace(BoardSpace space)
-    {
-        return adjascentSpaces.Contains(space);
-    }
     
+    // ----------- SELECTION & TILES
+    //
+    public void SetSelected(bool selected)
+    {
+        if (matPropBlock == null)
+            matPropBlock = new MaterialPropertyBlock();
+        
+        renderer = GetComponent<MeshRenderer>();
+        matPropBlock.SetColor("_Col", selected ? Color.yellow : Color.white);
+        renderer.SetPropertyBlock(matPropBlock);
+    }
+    public void SetTile(Tile tile)
+    {
+        occupyingTile = tile;
+        tile.transform.position = transform.position;
+    }
     public void DestroyTile(bool immediate = false)
     {
         if (IsOccupied)
@@ -64,54 +86,16 @@ public class BoardSpace : MonoBehaviour
             }
         }
     }
-
-    public void ClearOccupied()
+    public void ClearOccupiedTileReference()
     {
         occupyingTile = null;
     }
-
-    public void SetTile(Tile tile)
-    {
-        occupyingTile = tile;
-    }
-
-    public void PopulateWithTile(Tile tile, float tileSize)
-    {
-        occupyingTile = tile;
-        tile.transform.position = transform.position;
-        tile.transform.localScale = Vector3.one * tileSize;
-    }
-
-    private MaterialPropertyBlock matPropBlock;
-    private MeshRenderer renderer;
-    public void SetColor(Color col)
-    {
-        if (matPropBlock == null)
-            matPropBlock = new MaterialPropertyBlock();
-        
-        renderer = GetComponent<MeshRenderer>();
-        matPropBlock.SetColor("_Col", col);
-        this.col = col;
-        
-        GetComponent<Renderer>().SetPropertyBlock(matPropBlock);
-    }
-
-    public void Selected()
-    {
-        if (Board.instance.SpaceIsSelectable(this))
-        {
-            SetColor(selectedCol);
-            Debug.Log($"Selected {index}");
-        }
-        else
-        {
-            Debug.Log($"Selected unsuccessful {index}");
-        }
-    }
     
-    public void Deslected()
+    
+    // ----------- HELPER METHODS
+    //
+    public bool IsAdjascentToSpace(BoardSpace space)
     {
-        SetColor(Color.white);
-        //Debug.Log($"Deselected {index}");
+        return adjascentSpaces.Contains(space);
     }
 }

@@ -12,16 +12,28 @@ public class AppManager : MonoBehaviour
         GameOver,
     }
 
-    public AppState state = AppState.MainMenu;
-    
+    public static AppManager instance;
 
+    public AppState state = AppState.MainMenu;
+    public int score;
+    private bool selectionStarted = false;
+    
+    public LayerMask tileLayerMask;
+    
+    
+    public Color selectedSpaceCol = Color.yellow;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        
+        instance = this;
+        tileLayerMask  = LayerMask.GetMask("Tile");
     }
 
-    private bool selectionStarted = false;
+    public void AddScore(int points)
+    {
+        score += points;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -43,7 +55,7 @@ public class AppManager : MonoBehaviour
                         if (Board.instance.SpaceIsSelectable(space))
                         {
                             selectionStarted = true;
-                            space.SetColor(Color.yellow);
+                            space.SetSelected(true);
                         }
                     }
                 }
@@ -62,7 +74,7 @@ public class AppManager : MonoBehaviour
                         if (Board.instance.SpaceIsSelectable(space))
                         {
                             selectionStarted = true;
-                            space.SetColor(Color.yellow);
+                            space.SetSelected(true);
                         }
                         else
                         {

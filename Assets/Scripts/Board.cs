@@ -42,14 +42,16 @@ public class Board : MonoBehaviour
     public List<Tile> activeTiles = new List<Tile>();
     public Transform tilesParent;
   
-    private float tileSize => boardWorldSize / (dimensions + dimensions * tilePadding);
+    public float tileSize => boardWorldSize / (dimensions + dimensions * tilePadding);
+
+    public Vector3 tileScale => new Vector3(tileSize, tileSize, .8f);
     // between center and next tile
     private float tileSpacing => tileSize * .5f + tilePadding * 2;
     private float spaceSize => boardWorldSize / dimensions;
     private  float minY => -(boardWorldSize * .5f) + spaceSize * .5f;
 
     private List<BoardSpace> selectedSpaces = new();
-    private Color selectedTileCol => selectedSpaces[0].occupyingTile.col;
+    private Tile.TileType selectedTileType => selectedSpaces[0].occupyingTile.type;
     private BoardSpace prevSelectedSpave => selectedSpaces[^1];
     public bool IsSelecting => selectedSpaces.Count != 0;
 
@@ -77,13 +79,6 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //////////////////
-        // Update tile
-        foreach (var tile in activeTiles)
-        {
-            tile.ManualUpdate(tileSpacing, minY);
-        }
-        
         /////////////
         // Assess board state
         int inPlaceTiles = activeTiles.Count(x => x.state == Tile.TileState.InPlace);
@@ -113,6 +108,13 @@ public class Board : MonoBehaviour
         }
         else if (state == BoardState.Moving)
         {
+            //////////////////
+            // Update tile
+            foreach (var tile in activeTiles)
+            {
+                tile.UpdateTileMovement(tileSpacing, minY);
+            }
+            
             if(inPlaceTiles == activeTiles.Count)
                 state = BoardState.Filling;
         }
@@ -120,11 +122,14 @@ public class Board : MonoBehaviour
         {
             foreach (var space in boardSpaceList)
             {
-                space.ClearOccupied();
-                space.SetTile(FindOverlappingTile(space.index));
+                space.ClearOccupiedTileReference();
+                Tile tile = FindOverlappingTile(space.index);
+                if(tile!=null)
+                    space.SetTile(FindOverlappingTile(space.index));
             }
             
             populatedSpaces = boardSpaceList.Count(x => x.IsOccupied);
+            //Debug.Log($"populatedSpaces  {populatedSpaces}");
             if (populatedSpaces == boardSpaceList.Count)
                 state = BoardState.Static;
             else
@@ -143,12 +148,12 @@ public class Board : MonoBehaviour
             selectSpaceSuccess = true;
         else if (occupiedSpace == prevSelectedSpave)
             return true;
-        else if (selectedTileCol != occupiedSpace.occupyingTile.col)
+        else if (selectedTileType != occupiedSpace.occupyingTile.type)
         {
-            Debug.Log($"Not same colour as prev col {prevSelectedSpave.occupyingTile.col}");
+            Debug.Log($"Not same type as prev {prevSelectedSpave.occupyingTile.type}");
             selectSpaceSuccess = false;
         }
-        else if (prevSelectedSpave.IsAdjascentSpace(occupiedSpace))
+        else if (prevSelectedSpave.IsAdjascentToSpace(occupiedSpace))
             selectSpaceSuccess = true;
        
     
@@ -164,7 +169,7 @@ public class Board : MonoBehaviour
     {
         // clear selection
         foreach (var boardSpace in boardSpaceList)
-            boardSpace.Deslected();
+            boardSpace.SetSelected(false);
             
         selectedSpaces.Clear();
     }
@@ -190,8 +195,7 @@ public class Board : MonoBehaviour
     
     public Tile FindOverlappingTile(int2 index)
     {
-        
-        return activeTiles.FirstOrDefault(x => x.index.x == index.x && x.index.y == index.y);
+        return activeTiles.FirstOrDefault(x => x.boardSpaceIndex.x == index.x && x.boardSpaceIndex.y == index.y);
     }
 
     public int2 WorldPosXYIndex(Vector3 worldPos)
@@ -215,14 +219,19 @@ public class Board : MonoBehaviour
         {
             if(space.IsOccupied)
                 continue;
+           
+            if(activeTiles.Count >= Board.instance.boardSpaceList.Count)
+                return;
             
+            Debug.Log("Populating " +space.index);
+           
             /////////////////
             /// Spawn new tile
             Tile newTile = Instantiate(tilePrefab, tilesParent);
             newTile.name = "tile " + activeTiles.Count;
             activeTiles.Add(newTile);
-            newTile.SetColor(cols[Random.Range(0, cols.Length - 1)]);
-            space.PopulateWithTile(newTile, tileSize);   
+            newTile.SetType((Tile.TileType)Random.Range(0, cols.Length - 1));
+            space.SetTile(newTile);   
         }
     }
 
@@ -262,8 +271,9 @@ public class Board : MonoBehaviour
     {
         if (selectedSpaces.Count >= 3)
         {
-            selectedSpaces = selectedSpaces.OrderBy(x => x.index.y).ToList();
+            //selectedSpaces = selectedSpaces.OrderBy(x => x.index.y).ToList();
             state = BoardState.RemovingTiles;
+            AppManager.instance.AddScore(selectedSpaces.Count);
         }
         else
         {
