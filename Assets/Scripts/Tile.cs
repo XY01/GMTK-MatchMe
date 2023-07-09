@@ -81,9 +81,11 @@ public class Tile : MonoBehaviour
             // If close to correct spacing then lock in place
             if (Mathf.Abs(hit.distance - spacing) < .1f)
             {
-                BoardSpace boardSpace = Board.instance.FindBoardSpaceAtPos(transform.position);
-                transform.position = new Vector3(boardSpace.transform.position.x, boardSpace.transform.position.y, transform.position.z);
-                state = TileState.InPlace;
+                // replace using position got lookup index and board space
+                
+                // BoardSpace boardSpace = Board.instance.FindBoardSpaceAtPos(transform.position);
+                // transform.position = new Vector3(boardSpace.transform.position.x, boardSpace.transform.position.y, transform.position.z);
+                // state = TileState.InPlace;
             }
             else
             {

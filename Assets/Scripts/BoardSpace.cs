@@ -7,7 +7,8 @@ public class BoardSpace : MonoBehaviour
 {
     // PROPERTIES
     public bool IsOccupied => occupyingTile != null;
-    
+
+    #region VARIABLES
     // VARS
     public int2 index;
     public Tile occupyingTile;
@@ -16,6 +17,8 @@ public class BoardSpace : MonoBehaviour
     private MaterialPropertyBlock matPropBlock;
     private MeshRenderer renderer;
     private Color col;
+    #endregion
+   
 
     // ----------- INITIALIZATION
     //

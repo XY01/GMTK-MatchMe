@@ -27,6 +27,7 @@ public class AppManager : MonoBehaviour
     {
         instance = this;
         tileLayerMask  = LayerMask.GetMask("Tile");
+        Random.InitState(0);
     }
 
     public void AddScore(int points)
